@@ -76,7 +76,7 @@ module case(left=false) {
     [-.25,0,1,2],[-.25,1,1,2],[0,2,1,2]
 ];
   key_pos_thumb_left = [
-    [0.15,3,1,2],[-.1,4,1,2],[-0.2,5,2,2],[-.50,6,2,2]
+    [-.45,3.6,1,2],[-.45,4.6,1,2],[0,5.15,2,2],[-.2,6.1,2,2]
 ];
   key_pos_right = [
     [3.75,0,1,2],[3.75,1,1,2],[4,2,1,2],[4.15,3,1,2],[3.9,4,1,2],[3.8,5,1,2], [3.5,6,1,2],
@@ -85,6 +85,9 @@ module case(left=false) {
     [.75,0,1,2], [.75,1,1,2], [1,2,1,2],[1.15,3,1,2],[.9,4,1,2], [.8,5,1,2],  
     [-.25,0,1,2],[-.25,1,1,2],[0,2,1,2],[0.15,3,1,2],[-.1,4,1,2],[-0.2,5,1,2],[-.50,6,1,2]
   ];
+ key_pos_thumb_right = [
+    [-.5,3,1,2],[-.5,4,1,2],[0,5,2,2],[0,6,2,2]
+];
 
  // iterates over elements in array with values to module params 
  // row = key[0] increment/decrement by 1 positions a key 1u(19.5mm)*this value from the bottom left/right depending on which half
@@ -100,11 +103,24 @@ module case(left=false) {
       translate([cw/2-chw/2, -chd, thickness-chh-mpt]) cube([chw, chw+chd*2, chh]);
     }
   }
+  module thumb_key(row,col,size,sink=0) {
+    translate([kd*(col+(size-1)/2)+border, kd*row+border, -sink*sink_unit-d]) {
+      if (size>1) rotate(a = [0,0,-12]) translate([-(kd-cw)/2, -(kd-cw)*size-1, thickness+d]) cube([kd+d, (kd*size)+d, sink*sink_unit+d*2]);
+      else translate([-(kd-cw)/2, -(kd-cw)/2, thickness+d]) cube([kd+d, kd+d, sink*sink_unit+d*2]);
+      if (size>1)  rotate(a = [0,0,-13]) translate([0,0,-10]) cube([cw,cw,20]);
+      else translate([0,0,-10]) cube([cw,cw,20]);
+      translate([cw/2-chw/2, -chd, thickness-chh-mpt]) cube([chw, chw+chd*2, chh]);
+    }
+  }
 
   module keys() {
     if (left) for (k=key_pos_left) key(k[0],k[1]+key_shift,k[2],k[3]);
     else for (k=key_pos_right) key(k[0],k[1]+key_shift,k[2],k[3]);
   }
+  module thumb_keys(){
+   if (left) for (k=key_pos_thumb_left) thumb_key(k[0], k[1], k[2], k[3]); 
+   else for (k=key_pos_thumb_right) thumb_key(k[0], k[1], k[2], k[3]); 
+}
   
   module key_raise(row,col,size,sink=0) {
     if (sink < 0)
@@ -115,6 +131,7 @@ module case(left=false) {
   
   module key_raises() {
     if (left) for (k=key_pos_left) key_raise(k[0],k[1]+key_shift,k[2],k[3]);
+    else for (k=key_pos_right) key_raise(k[0],k[1]+key_shift,k[2],k[3]);
   }
   
   module front() {
@@ -134,6 +151,7 @@ module case(left=false) {
       }
     translate([6, 30, 0]) {
       keys();
+      translate([10,-3,0]) thumb_keys();
     }
       screw_holes();
     }
@@ -141,9 +159,10 @@ module case(left=false) {
       key_raises();
       keys();
     }
-  }
+    }
   front();
 }
+
 
 case(left=true);
 // mirror([0,1,0]) translate([10, 40, 0]) case();
