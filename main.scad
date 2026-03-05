@@ -1,6 +1,6 @@
-include <./NopSCADlib/vitamins/pcb.scad>
-include <./NopSCADlib/vitamins/pcbs.scad>
-include <rp_2040_blk.scad>
+//include <./NopSCADlib/vitamins/pcb.scad>
+//include <./NopSCADlib/vitamins/pcbs.scad>
+//include <rp_2040_blk.scad>
 
 $fs=1; // fragment length for circles
 d=0.01; // delta for extra cut
@@ -42,6 +42,26 @@ reference_points = [
     [ex3, ey4], // Right
     [ex4, ey5], // Bottom
     ];
+
+exi0 = 80;
+eyi0 = 23;
+exi1 = 4;
+eyi1 = 135;
+exi2 = 174.5;
+eyi3 = 69;
+exi3 = 174.5;
+eyi4 = 59;
+exi4 = 161.0;
+eyi5 = 4;
+inner_reference_points = [
+    [exi0, eyi1], // Bottom mid
+    [exi1, eyi0], // Bottom left
+    [exi1, eyi1], // Top left
+    [exi2, eyi1], // Top right
+    [exi2, eyi3], // Mid right
+    [exi3, eyi4], // Right
+    [exi4, eyi5], // Bottom
+    ];
 screw_holes = [
     [ex1, ey0], // Bottom left
     [ex1, ey1], // Top left
@@ -64,8 +84,9 @@ module case(left=false) {
   fastener_shift = 1.0;
   adjusted_length = length + border*2 - fastener_shift*2;
   adjusted_width = width + border*2 - fastener_shift*2;
-  screw_radius = 1.2;
+  screw_radius = 1.4;
   nut_radius = 2;
+  heat_insert_radius = 2;
   
   key_shift = 0;
   key_pos_left = [
@@ -76,7 +97,7 @@ module case(left=false) {
     [-.25,0,1,2],[-.25,1,1,2],[0,2,1,2]
 ];
   key_pos_thumb_left = [
-    [-.45,3.6,1,2],[-.45,4.6,1,2],[0,5.15,1.5,2],[-.2,6.15,1.5,2]
+    [-.45,3.6,1,2],[-.45,4.6,1,2],[0,5.15,1.5,2],[-.2,6.1,1.5,2]
 ];
   key_pos_right = [
     [3.75,0,1,2],[3.75,1,1,2],[4,2,1,2],[4.15,3,1,2],[3.9,4,1,2],[3.8,5,1,2], [3.5,6,1,2],
@@ -161,7 +182,51 @@ module case(left=false) {
       keys();
     }
     }
+  module back(){
+    thickness = 1.5;
+    front_sink = 3;
+    hole_depth = border*4+2*d;
+    
+    module screw_holes() {
+      for (s=screw_holes)
+	translate(s)
+	  union(){
+	  cylinder(h = ch+thickness+d*2, r = heat_insert_radius );
+	  cylinder(h = ch+thickness+d*2, r = heat_insert_radius );
+	}
+    }
+    module case_walls() {
+      minkowski() {
+	      linear_extrude(height = ch+thickness, center = false, convexity = 10, twist = 0, slices = 20, scale = 1.0) polygon(points = reference_points);
+	      cylinder(h = d, r = corner);
+	    }
+    }
+    module case_chamber() {
+      union() {
+	      linear_extrude(height = ch+4, center = false, convexity = 10, twist = 0, slices = 20, scale = 1) polygon(points = reference_points);
+	      cylinder(h = d, r = corner);
+	    }
+    }
+    
+    module plate() {
+      difference() {
+	union() {
+	  difference() {
+	    case_walls();
+	    translate([0,0,1]) case_chamber();
+	     	  }
+	  for (s=screw_holes){
+	    translate(s)
+	    cylinder(h = ch+thickness, r = 3);
+	  }
+	}
+	translate([0,0,.5]) screw_holes();
+      }
+    }
+    plate();
+}
   front();
+  translate([0,0,-ch-10]) back();
 }
 
 
