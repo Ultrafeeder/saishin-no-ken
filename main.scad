@@ -76,7 +76,7 @@ module case(left=false) {
     [-.25,0,1,2],[-.25,1,1,2],[0,2,1,2]
 ];
   key_pos_thumb_left = [
-    [-.45,3.6,1,2],[-.45,4.6,1,2],[0,5.15,2,2],[-.2,6.1,2,2]
+    [-.45,3.6,1,2],[-.45,4.6,1,2],[0,5.15,1.5,2],[-.2,6.15,1.5,2]
 ];
   key_pos_right = [
     [3.75,0,1,2],[3.75,1,1,2],[4,2,1,2],[4.15,3,1,2],[3.9,4,1,2],[3.8,5,1,2], [3.5,6,1,2],
@@ -105,11 +105,12 @@ module case(left=false) {
   }
   module thumb_key(row,col,size,sink=0) {
     translate([kd*(col+(size-1)/2)+border, kd*row+border, -sink*sink_unit-d]) {
-      if (size>1) rotate(a = [0,0,-12]) translate([-(kd-cw)/2, -(kd-cw)*size-1, thickness+d]) cube([kd+d, (kd*size)+d, sink*sink_unit+d*2]);
+      if (size>1) rotate(a = [0,0,-12]) translate([-(kd-cw)/2+8, -(kd-cw)*(size)-2, thickness+d]) cube([kd+d, (kd*size)+d, sink*sink_unit+d*2]);
       else translate([-(kd-cw)/2, -(kd-cw)/2, thickness+d]) cube([kd+d, kd+d, sink*sink_unit+d*2]);
-      if (size>1)  rotate(a = [0,0,-13]) translate([0,0,-10]) cube([cw,cw,20]);
+      if (size>1)  rotate(a = [0,0,-13]) translate([8,-2,-10]) cube([cw,cw,20]);
       else translate([0,0,-10]) cube([cw,cw,20]);
-      translate([cw/2-chw/2, -chd, thickness-chh-mpt]) cube([chw, chw+chd*2, chh]);
+      if (size>1) rotate(a = [0,0,-13]) translate([(cw/2-chw/2)+2, -chd+2.5, thickness-chh-mpt]) cube([chw, chw+chd*2, chh]);
+      else translate([(cw/2-chw/2), -chd, thickness-chh-mpt]) cube([chw, chw+chd*2, chh]);
     }
   }
 
