@@ -1,0 +1,21 @@
+#+TITLE: Saishin-no-ken design specs
+
+* Table of Contents :toc:
+- [[#featuresspecifications][Features/specifications]]
+  - [[#top-plate][Top plate]]
+  - [[#bottom-plate][Bottom plate]]
+
+* Features/specifications
+** Top plate
+*** DONE Columns/Rows
+-So far, got the layout done. Will mark complete when test fit is successful
+*** DONE M3 Screw points
+-Got parameters to create screw holes at the five reference points used to draw the case
+*** DONE Cutout/Plate for nice!view OLED screen
+*** DONE Ec11 encoder cutout
+** Bottom plate 
+*** DONE 4mm thick minimum
+*** DONE Make mounting holes at reference points for m3 heat inserts
+*** DONE Mounting platform for RP2040 mcu that interfaces with topmost case wall
+*** DONE 6.35mm Trs panel mount hole
+
