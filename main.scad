@@ -1,13 +1,10 @@
-//include <./NopSCADlib/vitamins/pcb.scad>
-//include <./NopSCADlib/vitamins/pcbs.scad>
-//include <rp_2040_blk.scad>
 
 $fs=1; // fragment length for circles
 d=0.01; // delta for extra cut
 
 kd=19.5; // standard key spacing
 cw=14; // standard width for cherry mx compatible keyholes
-ch=7.5; // height for cherry mx compatible keyholes
+ch=9; // height for cherry mx compatible keyholes
 
 shw=3.3; //stabilzer hole width in mm
 shl=14; //stabilizer hole height in mm
@@ -72,7 +69,7 @@ screw_holes = [
 // rp_mcu(x = 0, y = 0, z = 0);
 // polygon(points = reference_points, convexity = 1 );
 
-module case(left=false) {
+module case(left=false,top=false,bottom=false,master=true) {
   border = 2.5;
   length = 7.5*kd - border*2;
   width = 5*kd - border*2;
@@ -84,9 +81,8 @@ module case(left=false) {
   fastener_shift = 1.0;
   adjusted_length = length + border*2 - fastener_shift*2;
   adjusted_width = width + border*2 - fastener_shift*2;
-  screw_radius = 1.4;
-  nut_radius = 2;
-  heat_insert_radius = 2;
+  screw_radius = 1.9;
+  heat_insert_radius = 2.2;
   
   key_shift = 0;
   key_pos_left = [
@@ -159,18 +155,67 @@ module case(left=false) {
   module front() {
     module screw_holes() {
       for (s=screw_holes)
-		      translate(s)
-			union() {
-			translate([0, 0, 4]) cylinder(h = 3, r = 3, center = false);
-			translate([0, 0, -1]) cylinder(h = thickness+d*3, r = screw_radius);
-			}
+	translate(s)
+	  union() {
+	  translate([0, 0, 2]) cylinder(h = 5, r = 3, center = false);
+	  translate([0, 0, -1]) cylinder(h = thickness+d*3, r = screw_radius);
+	}
     }
+    
+    module encoder() {
+      diameter = 8;
+      bolt_clearance_d = 16;
+      union() {
+	cube([13.5, 14.5, 5.5], center = true); 
+	translate([0,-6.85,-2.75]) cube([1.25,1.25, 6.2]);
+	translate([0,0,12.75]) cylinder(h = 21, d = diameter, center = true);
+	translate([0,0,7]) cylinder(h = 5, d = bolt_clearance_d, center = true);
+     }
+    }
+    
+    oled_recess_width = 28.5;
+    oled_recess_height = 50.5;
+    oled_recess_depth = 3;
+       module oled_recess(){
+	 union() {
+	   translate([0,0,4]) cube([oled_recess_width, oled_recess_height, oled_recess_depth],center = true);
+	   translate([0,0,2]) cube([oled_recess_width-14, oled_recess_height-14, oled_recess_depth+2], center=true);
+	   translate([-7.25,-18.25,-2.2]) cube([oled_recess_width-14, 8, 3]);
+	 }
+	   translate([(oled_recess_width-5.5)/2, (oled_recess_height-5.5)/2, 0]) cylinder(r=heat_insert_radius, h=8, center = true);
+	   	   translate([-(oled_recess_width-5.5)/2, -(oled_recess_height-5.5)/2, 0]) cylinder(r=heat_insert_radius, h=8, center = true);
+
+       }
+       module oled_plate() {
+	 val = [-1,1];
+	 plate_width = 28;
+	 plate_height = 50;
+	 hole_offset = 6;
+	 module plate() {
+	   color(c = "red", alpha = .8) cube([plate_width, plate_height,2],center = true);
+	 }
+	 difference() {
+	   plate();
+	   cube([14, 32, 3],center = true);
+	   for (v=val){
+	       translate([v*(oled_recess_width-hole_offset)/2, v*(oled_recess_height-hole_offset)/2, 1])
+		 cylinder(d=8, h=1, center = true);
+	       translate([v*(oled_recess_width-hole_offset)/2, v*(oled_recess_height-hole_offset)/2, 0])
+		 cylinder(h = 3, r = screw_radius, center=true);
+	     }
+
+	 }
+      
+       }
+       translate([160,90,15]) oled_plate();
     
     difference() {
       minkowski() {
 	linear_extrude(height = thickness, center = false, convexity = 10, twist = 0, slices = 20, scale = 1.0) polygon(points = reference_points,convexity = 3);
 	cylinder(h = d, r = corner);
       }
+      translate([160,90, 2]) oled_recess();
+      translate([160,55, -1]) encoder();
     translate([6, 30, 0]) {
       keys();
       translate([10,-3,0]) thumb_keys();
@@ -181,9 +226,9 @@ module case(left=false) {
       key_raises();
       keys();
     }
-    }
+  }
   module back(){
-    thickness = 1.5;
+    thickness = 2;
     front_sink = 3;
     hole_depth = border*4+2*d;
     
@@ -191,20 +236,51 @@ module case(left=false) {
       for (s=screw_holes)
 	translate(s)
 	  union(){
-	  cylinder(h = ch+thickness+d*2, r = heat_insert_radius );
-	  cylinder(h = ch+thickness+d*2, r = heat_insert_radius );
+	  cylinder(h = (ch+thickness+d*2)+6, r=heat_insert_radius );
 	}
     }
+
+    module trs_hole() {
+      union(){
+	cube([9, 24, 11]);
+	rotate(a=[90,0,0])translate([4.5,5.7,-33]) cylinder(h = 9, r = 5);
+      }
+    }
+    
+    
+    module pc_cable_hole() {
+      rotate(a=[90,0,0])translate([4.5,5.7,-33]) cylinder(h = 9, r = 3);
+    }
+
+    module mcu_holder() {
+      difference(){ 
+	//Overall profile
+	translate([-1, -1, -2.5]) cube([25.2, 56, 6.3]);
+	translate([0,0,-2]) union() {
+	  //left cutout closest to mcu cutout
+	  cube([5,56,3.6]);
+	  //right cutout closest to mcu cutout
+	  translate([18.2,0,0]) cube([5,56,3.6]);
+	}
+	translate([0,0,1.55]) union() {
+	  //top opening
+	  translate([.5,0,0]) cube([22.2, 56, 3]);
+	  //mcu slot
+	  translate([0,0,0]) cube([23.2, 56, 1.2]);
+	}
+      }
+    }   
+
     module case_walls() {
       minkowski() {
-	      linear_extrude(height = ch+thickness, center = false, convexity = 10, twist = 0, slices = 20, scale = 1.0) polygon(points = reference_points);
+	      linear_extrude(height = ch+thickness+5, center = false, convexity = 10, twist = 0, slices = 20, scale = 1.0) polygon(points = reference_points);
 	      cylinder(h = d, r = corner);
 	    }
     }
     module case_chamber() {
       union() {
-	      linear_extrude(height = ch+4, center = false, convexity = 10, twist = 0, slices = 20, scale = 1) polygon(points = reference_points);
-	      cylinder(h = d, r = corner);
+	      linear_extrude(height = ch+thickness+6, center = false, convexity = 10, twist = 0, slices = 20, scale = 1) polygon(points = reference_points);
+	      cylinder(h = ch+thickness+6, r = corner);
 	    }
     }
     
@@ -214,21 +290,30 @@ module case(left=false) {
 	  difference() {
 	    case_walls();
 	    translate([0,0,1]) case_chamber();
+	    translate([160,113,thickness+d]) trs_hole();
+	    translate([40,113,thickness+d]) pc_cable_hole();
 	     	  }
 	  for (s=screw_holes){
 	    translate(s)
-	    cylinder(h = ch+thickness, r = 3);
+	    cylinder(h = ch+thickness+5, r = 4 );
 	  }
+	  translate([8,20,thickness+2]) mcu_holder();
 	}
 	translate([0,0,.5]) screw_holes();
       }
     }
     plate();
 }
-  front();
-  translate([0,0,-ch-10]) back();
+  if (top) front();
+  if (bottom) translate([0,0,-ch-10]) back();
 }
 
 
-case(left=true);
-// mirror([0,1,0]) translate([10, 40, 0]) case();
+// render top
+// case(left=true,top=true);
+// translate([400,0,0]) mirror([1,0,0]) case(left=true,top=true);
+// render bottom
+case(left=true,bottom=true);
+translate([400,0,0]) mirror([1,0,0]) case(left=true,bottom=true);
+
+
