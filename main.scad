@@ -30,6 +30,9 @@ ex3 = 178.5;
 ey4 = 59;
 ex4 = 165.0;
 ey5 = 0;
+ex6 = 75;
+ey6 = 30;
+ex7 = 95;
 reference_points = [
     [ex0, ey0], // Bottom mid
     [ex1, ey0], // Bottom left
@@ -40,31 +43,14 @@ reference_points = [
     [ex4, ey5], // Bottom
     ];
 
-exi0 = 80;
-eyi0 = 23;
-exi1 = 4;
-eyi1 = 135;
-exi2 = 174.5;
-eyi3 = 69;
-exi3 = 174.5;
-eyi4 = 59;
-exi4 = 161.0;
-eyi5 = 4;
-inner_reference_points = [
-    [exi0, eyi1], // Bottom mid
-    [exi1, eyi0], // Bottom left
-    [exi1, eyi1], // Top left
-    [exi2, eyi1], // Top right
-    [exi2, eyi3], // Mid right
-    [exi3, eyi4], // Right
-    [exi4, eyi5], // Bottom
-    ];
 screw_holes = [
     [ex1, ey0], // Bottom left
     [ex1, ey1], // Top left
     [ex2, ey1], // Top right
     [ex3, ey4], // Right
     [ex4, ey5], // Bottom
+    [ex6,ey6],
+    [ex7, ey1]
     ];
 // rp_mcu(x = 0, y = 0, z = 0);
 // polygon(points = reference_points, convexity = 1 );
@@ -304,14 +290,14 @@ module case(left=false,top=false,bottom=false,master=true) {
     }
     plate();
 }
-  if (top) front();
+  if (top) translate([0,0,25]) front();
   if (bottom) translate([0,0,-ch-10]) back();
 }
 
 
 // render top
-// case(left=true,top=true);
-// translate([400,0,0]) mirror([1,0,0]) case(left=true,top=true);
+case(left=true,top=true);
+translate([400,0,0]) mirror([1,0,0]) case(left=true,top=true);
 // render bottom
 case(left=true,bottom=true);
 translate([400,0,0]) mirror([1,0,0]) case(left=true,bottom=true);
