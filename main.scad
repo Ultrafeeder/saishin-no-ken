@@ -52,6 +52,23 @@ screw_holes = [
     [ex6,ey6],
     [ex7, ey1]
     ];
+
+px0 = 45;
+py0 = 103;
+px1 = 84;
+py1 = 107;
+px2 = 123;
+py2 = 65;
+py3 = 70;
+py4 = 78;
+plate_columns = [
+		 [px0, py0],
+		 [px1, py1],
+		 [px2, py0],
+		 [px0, py2],
+		 [px1, py3],
+		 [px2, py4]
+];
 // rp_mcu(x = 0, y = 0, z = 0);
 // polygon(points = reference_points, convexity = 1 );
 
@@ -79,7 +96,7 @@ module case(left=false,top=false,bottom=false,master=true) {
     [-.25,0,1,2],[-.25,1,1,2],[0,2,1,2]
 ];
   key_pos_thumb_left = [
-    [-.45,3.6,1,2],[-.45,4.6,1,2],[0,5.15,1.5,2],[-.2,6.1,1.5,2]
+    [-.45,3.6,1,2],[-.45,4.6,1,2],[0,5.25,1.25,2],[-.2,6.2,1.25,2]
 ];
   key_pos_right = [
     [3.75,0,1,2],[3.75,1,1,2],[4,2,1,2],[4.15,3,1,2],[3.9,4,1,2],[3.8,5,1,2], [3.5,6,1,2],
@@ -147,6 +164,14 @@ module case(left=false,top=false,bottom=false,master=true) {
 	  translate([0, 0, -1]) cylinder(h = thickness+d*3, r = screw_radius);
 	}
     }
+
+    module standoff_hole() {
+      for (p=plate_columns) 
+	difference() {
+	  color("red") translate(p) cylinder(h=2.7,d=3);
+	  translate([p[0],p[1],-.2]) cylinder(h=1.5,d=2.2);
+	}
+}
     
     module encoder() {
       diameter = 8;
@@ -204,7 +229,7 @@ module case(left=false,top=false,bottom=false,master=true) {
       translate([160,55, -1]) encoder();
     translate([6, 30, 0]) {
       keys();
-      translate([10,-3,0]) thumb_keys();
+      translate([12,-3,0]) thumb_keys();
     }
       screw_holes();
     }
@@ -212,9 +237,10 @@ module case(left=false,top=false,bottom=false,master=true) {
       key_raises();
       keys();
     }
+      translate([0,0,-.5]) standoff_hole();
   }
   module back(){
-    thickness = 2;
+    thickness = 4;
     front_sink = 3;
     hole_depth = border*4+2*d;
     
@@ -224,6 +250,18 @@ module case(left=false,top=false,bottom=false,master=true) {
 	  union(){
 	  cylinder(h = (ch+thickness+d*2)+6, r=heat_insert_radius );
 	}
+    }
+    
+    module plate_standoffs(st) {
+      for (p=plate_columns) {
+	translate(p){
+	  cylinder(h = 2, r = 3);
+	  translate([0,0,st/2])cube([1, 1.8, st],center=true);
+	  translate([0,0,st/4])cube([1, 3.6, st/2],center=true);
+	  translate([0,0,st/2])cube([1.8, 1, st],center=true);
+	  translate([0,0,st/4])cube([3.6, 1, st/2],center=true);
+	}
+      }
     }
 
     module trs_hole() {
@@ -270,6 +308,7 @@ module case(left=false,top=false,bottom=false,master=true) {
 	    }
     }
     
+	plate_standoffs(st=(ch+thickness+d*2)+6);
     module plate() {
       difference() {
 	union() {
@@ -277,7 +316,7 @@ module case(left=false,top=false,bottom=false,master=true) {
 	    case_walls();
 	    translate([0,0,1]) case_chamber();
 	    translate([160,113,thickness+d]) trs_hole();
-	    translate([40,113,thickness+d]) pc_cable_hole();
+	   if (!left) translate([40,113,thickness+d]) pc_cable_hole();
 	     	  }
 	  for (s=screw_holes){
 	    translate(s)
@@ -290,7 +329,7 @@ module case(left=false,top=false,bottom=false,master=true) {
     }
     plate();
 }
-  if (top) translate([0,0,25]) front();
+  if (top) translate([0,0,0]) front();
   if (bottom) translate([0,0,-ch-10]) back();
 }
 
@@ -299,7 +338,7 @@ module case(left=false,top=false,bottom=false,master=true) {
 case(left=true,top=true);
 translate([400,0,0]) mirror([1,0,0]) case(left=true,top=true);
 // render bottom
-case(left=true,bottom=true);
+case(left=false,bottom=true);
 translate([400,0,0]) mirror([1,0,0]) case(left=true,bottom=true);
 
-
+ 
