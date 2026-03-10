@@ -65,15 +65,18 @@ px1 = 84;
 py1 = 107;
 px2 = 123;
 py2 = 65;
+px3 = 130;
 py3 = 70;
 py4 = 78;
+py5 = 45;
 plate_columns = [
 		 [px0, py0],
 		 [px1, py1],
 		 [px2, py0],
 		 [px0, py2],
 		 [px1, py3],
-		 [px2, py4]
+		 [px2, py4],
+		 [px3, py5]
 ];
 // rp_mcu(x = 0, y = 0, z = 0);
 // polygon(points = reference_points, convexity = 1 );
@@ -341,7 +344,7 @@ module case(left=false,top=false,bottom=false,master=true) {
 
 
 // render top
-case(left=true,top=true);
+// case(left=true,top=true);
 translate([400,0,0]) mirror([1,0,0]) case(left=true,top=true);
 // render bottom
 case(left=false,bottom=true);
