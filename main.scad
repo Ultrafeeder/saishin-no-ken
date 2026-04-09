@@ -47,7 +47,7 @@ reference_points = [
     [ex2, ey3], // Mid right
     [ex3, ey4], // Right
     [ex4, ey5], // Bottom
-    ];
+		    ];
 
 screw_holes = [
     [ex1, ey0], // Bottom left
@@ -57,7 +57,7 @@ screw_holes = [
     [ex4, ey5], // Bottom
     [ex6,ey6],
     [ex7, ey1]
-    ];
+	       ];
 
 px0 = 45;
 py0 = 103;
@@ -77,7 +77,7 @@ plate_columns = [
 		 [px1, py3],
 		 [px2, py4],
 		 [px3, py5]
-];
+		 ];
 // rp_mcu(x = 0, y = 0, z = 0);
 // polygon(points = reference_points, convexity = 1 );
 
@@ -331,7 +331,7 @@ module case(left=false,top=false,bottom=false,master=true) {
 	    translate(s)
 	    cylinder(h = ch+thickness+5, r = 4 );
 	  }
-	  translate([8,20,thickness+2]) mcu_holder();
+	  translate([8,20,thickness-1.5]) mcu_holder();
 	}
 	translate([0,0,.5]) screw_holes();
       }
@@ -344,10 +344,10 @@ module case(left=false,top=false,bottom=false,master=true) {
 
 
 // render top
-// case(left=true,top=true);
+case(left=true,top=true);
 translate([400,0,0]) mirror([1,0,0]) case(left=true,top=true);
 // render bottom
-case(left=false,bottom=true);
-translate([400,0,0]) mirror([1,0,0]) case(left=true,bottom=true);
+//case(left=false,bottom=true);
+//translate([400,0,0]) mirror([1,0,0]) case(left=true,bottom=true);
 
  
