@@ -1,116 +1,25 @@
 // rows contain columns in vectors
-layout = [
-  [[1,1,0,.25,0,false], [1,1,0,0,0,false], [1,1,0,0,0,false], [1,1,0,0,0,false], [1,1,0,0,0,false], [1,1,0,0,0,false], [1,1,0,0,0,false]],
-
-  [[1,1,0,.25,0,false], [1,1,0,0,0,false], [1,1,0,0,0,false], [1,1,0,0,0,false], [1,1,0,0,0,false], [1,1,0,0,0,false], [1,1,0,0,0,false]],
-
-  [[1,1,0,.25,0,false], [1,1,0,0,0,false], [1,1,0,0,0,false], [1,1,0,0,0,false], [1,1,0,0,0,false], [1,1,0,0,0,false], [1,1,0,0,0,false]],
-
-  [[1,1,0,.25,0,false], [1,1,0,0,0,false], [1,1,0,0,0,false], [1,1,0,0,0,false], [1,1,0,0,0,false], [1,1,0,0,0,false], [1,1,0,0,0,true]],
-
-  [[1,1,0,.25,0,false], [1,1,0,0,0,false], [1,1,0,0,0,false], [1,1,0,1,0,false], [1,1,0,1,0,false], [1,2,0,0,0,false], [1,2,0,0,0,false]],
-];
-
-
-module hole_cutouts(keys=layout, space=19.5, holesize=14, encoder=8.4){
-  module stab_hole(){
-    
-}
- for(row=[0:len(keys)-1]) {
-   for(col=[0:len(keys[row])-1])
-     {
-       let(
-	   k=keys[row][col],
-	   xsize=space*k[0],
-	   xpos=(space*col)+(((k[0])-1)*space)+(k[2]*space),
-	   ysize=space*k[1],
-	   ypos=(space*row)+(((k[1])-1)*space)+(k[3]*space),
-	   rotation=k[4],
-	   isencoder=k[5]
-	   )
-	 {
-	    translate([xpos,-ypos,0]){
-	      if(!isencoder) 
-		{
-		  if(k[0]==2)
-		    {
-		      translate([xsize/2,ysize/2,0]) cube([holesize,holesize,25], center=true);
-		    }
-		      translate([xsize/2,ysize/2,0]) cube([holesize,holesize,25], center=true);
-		}
-	      else translate([xsize/2,ysize/2,0]) cylinder(h=25, d=encoder, center=true);
-	    }
-	 }
-     }
- } 
-}
-// hole_cutouts();
-
-module keycap_cutouts(keys=layout, delta=0.02, space=19.5, encoder=12){
-  for(row=[0:len(keys)-1]) {
-   for(col=[0:len(keys[row])-1])
-     {
-       let(
-	   k=keys[row][col],
-	   xsize=space*k[0],
-	   xpos=(space*col)+(((k[0])-1)*space)+(k[2]*space),
-	   ysize=space*k[1],
-	   ypos=(space*row)+(((k[1])-1)*space)+(k[3]*space),
-	   rotation=k[4],
-	   isencoder=k[5]
-	   )
-	 {
-	    translate([xpos,-ypos,0]){
-	      if(!isencoder) translate([xsize/2,ysize/2,0]) cube([xsize+delta,ysize+delta,25], center=true);
-	      else translate([xsize/2,ysize/2,0]) cylinder(h=25, d=encoder, center=true);
-	    }
-	 }
-     }
- }  
-}
-// translate([200,0,0]) keycap_cutouts();
-
-
-module gasket_holes(keys=layout, delta=0.02,space=19.5, holesize=18, encoder=12){
-   for(row=[0:len(keys)-1]) {
-   for(col=[0:len(keys[row])-1])
-     {
-       let(
-	   k=keys[row][col],
-	   xsize=space*k[0],
-	   xpos=(space*col)+(((k[0])-1)*space)+(k[2]*space),
-	   ysize=space*k[1],
-	   ypos=(space*row)+(((k[1])-1)*space)+(k[3]*space),
-	   rotation=k[4],
-	   isencoder=k[5]
-	   )
-	 {
-	    translate([xpos,-ypos,0]){
-	      if(!isencoder) translate([xsize/2,ysize/2,0]) cube([holesize+delta, holesize+delta,8], center=true);
-	      else translate([xsize/2,ysize/2,0]) cube([encoder+delta,encoder+delta,8], center=true);
-	    }
-	 }
-     }
- }
-}
-// gasket_holes();
+include <keys.scad>
+include <kb-utils/top-plate-utils.scad>
 
 points =[
 	 [0,0],
-	 [0,150],
-	 [170,150],
-	 [170,0]
+	 [90,10],
+	 [250,0],
+	 [250,150],
+	 [90,165],
+	 [0,150]
 ];
 
 module top_assembly(
 		    polygon_points=points,
-		    keys=layout,
+		    keys,
 		    top_plate_height=9,
 		    top_plate_offset=[0,0,40],
 		    key_plate_height=1.5,
 		    key_plate_depth=1,
 		    key_plate_offset=[0,0,30],
-		    gasket_height=4,
+		    gasket_height=5,
 		    gasket_plate_offset=[0,0,15],
 		    bottom_plate_height=3,
 		    bottom_plate_offset=[0,0,0],
@@ -138,7 +47,7 @@ module top_assembly(
       }
       translate([0,0,-9.9]) cube([500,500,10],center=true);
       translate([0,0,-(clearance/2)]) shape(h=clearance);
-      translate([20,120,0]) keycap_cutouts(keys = layout, delta = 0.02, space = 19.5, encoder = 12);
+      translate([20,120,0]) keycap_cutouts(keys=keys, delta = 0.02, space = 19.5, encoder = 12);
     }
   }
 
@@ -147,7 +56,7 @@ module top_assembly(
     translate(pos_offset) difference()
       {
 	shape(h=key_plate_height);
-	translate(plate_layer_allign) hole_cutouts();
+	translate(plate_layer_allign) hole_cutouts(keys=keys);
       }    
   }
   
@@ -156,7 +65,7 @@ module top_assembly(
       translate(pos_offset) difference()
 	{
 	 color("grey") shape(h=gasket_height);
-	  translate(plate_layer_allign) gasket_holes();
+	  translate(plate_layer_allign) gasket_holes(keys=keys);
 	}
     }
   
@@ -171,6 +80,6 @@ module top_assembly(
   if(bottom_plate) bottom_plate();
 }
 
-top_assembly();
+top_assembly(keys=layout);
 
 

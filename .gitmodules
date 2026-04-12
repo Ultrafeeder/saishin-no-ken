@@ -1,0 +1,3 @@
+[submodule "kb-utils"]
+	path = kb-utils
+	url = git@github.com:Ultrafeeder/kb-utils.git
