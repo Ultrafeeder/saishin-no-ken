@@ -101,9 +101,9 @@ module top_assembly(
       }
   }
 
-  if(top)  translate([0,-.4,4]) rotate([3,0,0]) top_plate();
-  // if(plate) translate([0,0,5]) rotate([3,0,0]) key_plate();
-  // if(gasket) translate([0,0,3]) rotate([3,0,0]) gasket();
+  // if(top)  translate([0,-.4,4]) rotate([3,0,0]) top_plate();
+  if(plate)  rotate([3,0,0]) key_plate();
+  // if(gasket)  rotate([3,0,0]) gasket();
   // if(bottom_plate) rotate([3,0,0]) bottom_plate();
 }
 
@@ -158,21 +158,45 @@ module bottom_cavity()
        }
     }
   difference() {
-  color("red") translate([130,148.5,0]) rotate([90,0,0]) cylinder(h = 17.5, d = 18, center = false);
-  color("green") translate([130,151.5,0]) rotate([90,0,0]) cylinder(h = 17.5, d = 17.5, center = false);
-  color("blue") translate([130,150,0]) rotate([90,0,0]) cylinder(h = 50, d = 8.3, center = false);
-  translate([120,134,-17]) cube([20,30,16]);
+    color("red") translate([130,148.5,0]) rotate([90,0,0]) cylinder(h = 17.5, d = 18, center = false);
+    color("green") translate([130,151.5,0]) rotate([90,0,0]) cylinder(h = 17.5, d = 17.5, center = false);
+    color("blue") translate([130,150,0]) rotate([90,0,0]) cylinder(h = 50, d = 8.3, center = false);
+    translate([120,134,-17]) cube([20,30,16]);
   }
   difference() {
-  color("red") translate([50,145.5,0]) rotate([90,0,0]) cylinder(h=14.5, d=20, center = false);
-  color("green") translate([50,151.5,0]) rotate([90,0,0]) cylinder(h = 17.5, d = 19.1, center = false);
-  color("blue") translate([50,150,0]) rotate([90,0,0]) cylinder(h = 50, d = 10.2, center = false);
-  translate([40,134,-16]) cube([20,30,16]);
+    color("red") translate([50,145.5,0]) rotate([90,0,0]) cylinder(h=14.5, d=20, center = false);
+    color("green") translate([50,151.5,0]) rotate([90,0,0]) cylinder(h = 17.5, d = 19.1, center = false);
+    color("blue") translate([50,150,0]) rotate([90,0,0]) cylinder(h = 50, d = 10.2, center = false);
+    translate([40,134,-16]) cube([20,30,16]);
   }
+module mcu_holder() {
+      difference(){ 
+	//Overall profile
+	translate([-1, -1, -2.5]) cube([25.2, 56, 7]);
+	translate([0,0,-2]) union() {
+	  //left cutout closest to mcu cutout
+	  cube([5,56,3.6]);
+	  //right cutout closest to mcu cutout
+	  translate([18.2,0,0]) cube([5,56,3.6]);
+	}
+	translate([0,0,1.55]) union() {
+	  //top opening
+	  translate([.5,0,0]) cube([22.2, 70, 3]);
+	  translate([2.5,-10,0]) cube([18, 70, 3]);
+	  //mcu slot
+	  translate([-.05,0,0]) cube([23.32, 56, 1.4]);
+	  translate([0,10,0]) cube([23.2, 40, 4]);
+	  translate([-2,-2,-8]) cube([30, 60, 6]);
+	}
+      }
+}
+ color("blue") translate([140,30,-11]) rotate([0,0,90]) mcu_holder();
 }
 
 translate([0,0,4]) top_assembly(keys=layout);
-bottom_cavity();
+// bottom_cavity();
+
+
 
 
 

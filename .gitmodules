@@ -1,3 +1,6 @@
 [submodule "kb-utils"]
 	path = kb-utils
 	url = git@github.com:Ultrafeeder/kb-utils.git
+[submodule "keyboard_lib"]
+	path = keyboard_lib
+	url = https://gitlab.com/alexives/keyboard_lib.git
